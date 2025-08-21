@@ -1,0 +1,11 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+/* Si vous utilisez du CSS personnalisé */
+.bg-glass {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+  }
+
+  @keyframes loadingBar {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}

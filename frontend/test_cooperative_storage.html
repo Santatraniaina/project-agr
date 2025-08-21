@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Stockage Unifié des Coopératives</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        .btn-danger {
+            background: #dc3545;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        .cooperative-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .cooperative-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            background: white;
+        }
+        .cooperative-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ddd;
+            margin-bottom: 10px;
+        }
+        .cooperative-info {
+            margin-bottom: 10px;
+        }
+        .cooperative-info strong {
+            color: #333;
+        }
+        .cooperative-actions {
+            display: flex;
+            gap: 5px;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #155724;
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test du Stockage Unifié des Coopératives</h1>
+        <p>Ce fichier permet de tester le système de stockage unifié des coopératives et leurs images.</p>
+        
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalCooperatives">-</div>
+                <div class="stat-label">Coopératives</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalImages">-</div>
+                <div class="stat-label">Images</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalSize">-</div>
+                <div class="stat-label">Espace (MB)</div>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="refreshStats()">🔄 Actualiser les stats</button>
+        <button class="btn btn-success" onclick="exportData()">📤 Exporter</button>
+        <button class="btn btn-danger" onclick="clearAllData()">🗑️ Tout supprimer</button>
+    </div>
+
+    <div class="container">
+        <h2>📝 Ajouter/Modifier une Coopérative</h2>
+        <form id="cooperativeForm">
+            <div class="form-group">
+                <label for="nom">Nom de la coopérative:</label>
+                <input type="text" id="nom" name="nom" required>
+            </div>
+            <div class="form-group">
+                <label for="marque">Marque:</label>
+                <input type="text" id="marque" name="marque" required>
+            </div>
+            <div class="form-group">
+                <label for="modele">Modèle:</label>
+                <input type="text" id="modele" name="modele" required>
+            </div>
+            <div class="form-group">
+                <label for="logo">Logo (optionnel):</label>
+                <input type="file" id="logo" name="logo" accept="image/*">
+                <small>Formats supportés: PNG, JPG, GIF (max 100 MB)</small>
+            </div>
+            <div class="form-group">
+                <label for="compression">Compression automatique:</label>
+                <select id="compression" name="compression">
+                    <option value="true">Activée</option>
+                    <option value="false">Désactivée</option>
+                </select>
+            </div>
+            <button type="submit" class="btn">💾 Sauvegarder</button>
+            <button type="button" class="btn btn-danger" onclick="resetForm()">🔄 Réinitialiser</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <h2>🏢 Coopératives Stockées</h2>
+        <div id="cooperativesList" class="cooperative-list">
+            <p>Chargement...</p>
+        </div>
+    </div>
+
+    <script>
+        // Service de stockage unifié simplifié pour les tests
+        class SimpleCooperativeStorage {
+            constructor() {
+                this.dbName = 'TestCooperativeStorageDB';
+                this.dbVersion = 1;
+                this.cooperativesStore = 'cooperatives';
+                this.imagesStore = 'images';
+                this.db = null;
+                this.init();
+            }
+
+            async init() {
+                return new Promise((resolve, reject) => {
+                    if (!window.indexedDB) {
+                        reject(new Error('IndexedDB non supporté'));
+                        return;
+                    }
+
+                    const request = indexedDB.open(this.dbName, this.dbVersion);
+
+                    request.onerror = () => reject(request.error);
+                    request.onsuccess = () => {
+                        this.db = request.result;
+                        resolve();
+                    };
+
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        
+                        if (!db.objectStoreNames.contains(this.cooperativesStore)) {
+                            const cooperativesStore = db.createObjectStore(this.cooperativesStore, { keyPath: 'id', autoIncrement: true });
+                            cooperativesStore.createIndex('timestamp', 'timestamp', { unique: false });
+                        }
+                        
+                        if (!db.objectStoreNames.contains(this.imagesStore)) {
+                            const imagesStore = db.createObjectStore(this.imagesStore, { keyPath: 'id', autoIncrement: true });
+                            imagesStore.createIndex('cooperativeId', 'cooperativeId', { unique: false });
+                        }
+                    };
+                });
+            }
+
+            generateId() {
+                return `coop_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            }
+
+            async saveCooperative(cooperativeData) {
+                if (!this.db) await this.init();
+                
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        const transaction = this.db.transaction([this.cooperativesStore, this.imagesStore], 'readwrite');
+                        const cooperativesStore = transaction.objectStore(this.cooperativesStore);
+                        const imagesStore = transaction.objectStore(this.imagesStore);
+
+                        const cooperative = {
+                            id: cooperativeData.id || this.generateId(),
+                            nom: cooperativeData.nom,
+                            marque: cooperativeData.marque,
+                            modele: cooperativeData.modele,
+                            timestamp: Date.now(),
+                            lastModified: Date.now()
+                        };
+
+                        if (cooperativeData.logo && typeof cooperativeData.logo !== 'string') {
+                            const imageId = `img_${cooperative.id}_${Date.now()}`;
+                            
+                            const imageData = {
+                                id: imageId,
+                                cooperativeId: cooperative.id,
+                                filename: cooperativeData.logo.name,
+                                type: cooperativeData.logo.type,
+                                size: cooperativeData.logo.size,
+                                data: cooperativeData.logo,
+                                timestamp: Date.now()
+                            };
+
+                            cooperative.logoId = imageId;
+                            cooperative.hasLogo = true;
+
+                            await new Promise((imgResolve, imgReject) => {
+                                const imgRequest = imagesStore.add(imageData);
+                                imgRequest.onsuccess = () => imgResolve();
+                                imgRequest.onerror = () => imgReject(imgRequest.error);
+                            });
+                        }
+
+                        const coopRequest = cooperativesStore.put(cooperative);
+                        coopRequest.onsuccess = () => resolve(cooperative);
+                        coopRequest.onerror = () => reject(coopRequest.error);
+
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            }
+
+            async getAllCooperatives() {
+                if (!this.db) await this.init();
+                
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        const transaction = this.db.transaction([this.cooperativesStore, this.imagesStore], 'readonly');
+                        const cooperativesStore = transaction.objectStore(this.cooperativesStore);
+                        const imagesStore = transaction.objectStore(this.imagesStore);
+
+                        const cooperativesRequest = cooperativesStore.getAll();
+                        cooperativesRequest.onsuccess = async () => {
+                            const cooperatives = cooperativesRequest.result;
+                            
+                            for (const cooperative of cooperatives) {
+                                if (cooperative.logoId) {
+                                    try {
+                                        const imageRequest = imagesStore.get(cooperative.logoId);
+                                        imageRequest.onsuccess = () => {
+                                            if (imageRequest.result) {
+                                                this.fileToBase64(imageRequest.result.data).then(base64 => {
+                                                    cooperative.logoPreview = base64;
+                                                });
+                                            }
+                                        };
+                                    } catch (error) {
+                                        console.warn('Erreur lors de la récupération de l\'image:', error);
+                                    }
+                                }
+                            }
+
+                            resolve(cooperatives);
+                        };
+                        cooperativesRequest.onerror = () => reject(cooperativesRequest.error);
+
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            }
+
+            async deleteCooperative(id) {
+                if (!this.db) await this.init();
+                
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        const transaction = this.db.transaction([this.cooperativesStore, this.imagesStore], 'readwrite');
+                        const cooperativesStore = transaction.objectStore(this.cooperativesStore);
+                        const imagesStore = transaction.objectStore(this.imagesStore);
+
+                        const cooperativeRequest = cooperativesStore.get(id);
+                        cooperativeRequest.onsuccess = async () => {
+                            if (cooperativeRequest.result && cooperativeRequest.result.logoId) {
+                                try {
+                                    await new Promise((imgResolve, imgReject) => {
+                                        const imgRequest = imagesStore.delete(cooperativeRequest.result.logoId);
+                                        imgRequest.onsuccess = () => imgResolve();
+                                        imgRequest.onerror = () => imgReject(imgRequest.error);
+                                    });
+                                } catch (error) {
+                                    console.warn('Erreur lors de la suppression de l\'image:', error);
+                                }
+                            }
+
+                            const deleteRequest = cooperativesStore.delete(id);
+                            deleteRequest.onsuccess = () => resolve();
+                            deleteRequest.onerror = () => reject(deleteRequest.error);
+                        };
+                        cooperativeRequest.onerror = () => reject(cooperativeRequest.error);
+
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            }
+
+            async getStorageInfo() {
+                if (!this.db) await this.init();
+                
+                try {
+                    const transaction = this.db.transaction([this.cooperativesStore, this.imagesStore], 'readonly');
+                    const cooperativesStore = transaction.objectStore(this.cooperativesStore);
+                    const imagesStore = transaction.objectStore(this.imagesStore);
+
+                    const [cooperatives, images] = await Promise.all([
+                        new Promise((resolve, reject) => {
+                            const request = cooperativesStore.getAll();
+                            request.onsuccess = () => resolve(request.result);
+                            request.onerror = () => reject(request.error);
+                        }),
+                        new Promise((resolve, reject) => {
+                            const request = imagesStore.getAll();
+                            request.onsuccess = () => resolve(request.result);
+                            request.onerror = () => reject(request.error);
+                        })
+                    ]);
+
+                    const totalImageSize = images.reduce((sum, img) => sum + img.size, 0);
+
+                    return {
+                        totalCooperatives: cooperatives.length,
+                        totalImages: images.length,
+                        totalImageSize: totalImageSize,
+                        totalImageSizeMB: (totalImageSize / (1024 * 1024)).toFixed(2)
+                    };
+
+                } catch (error) {
+                    throw error;
+                }
+            }
+
+            async exportAllData() {
+                if (!this.db) await this.init();
+                
+                try {
+                    const cooperatives = await this.getAllCooperatives();
+                    return {
+                        cooperatives: cooperatives,
+                        exportDate: new Date().toISOString(),
+                        version: '1.0'
+                    };
+                } catch (error) {
+                    throw error;
+                }
+            }
+
+            fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        // Instance globale
+        const cooperativeStorage = new SimpleCooperativeStorage();
+
+        // Gestion du formulaire
+        document.getElementById('cooperativeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const cooperativeData = {
+                nom: formData.get('nom'),
+                marque: formData.get('marque'),
+                modele: formData.get('modele'),
+                logo: formData.get('logo') ? formData.get('logo').files[0] : null
+            };
+
+            try {
+                // Compression si activée
+                if (formData.get('compression') === 'true' && cooperativeData.logo && cooperativeData.logo.size > 5 * 1024 * 1024) {
+                    cooperativeData.logo = await compressImage(cooperativeData.logo, 1920, 0.8);
+                }
+
+                await cooperativeStorage.saveCooperative(cooperativeData);
+                showMessage('Coopérative sauvegardée avec succès !', 'success');
+                resetForm();
+                await refreshData();
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde:', error);
+                showMessage('Erreur lors de la sauvegarde', 'error');
+            }
+        });
+
+        // Fonctions utilitaires
+        function compressImage(file, maxWidth = 1920, quality = 0.8) {
+            return new Promise((resolve, reject) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+
+                img.onload = () => {
+                    let { width, height } = img;
+                    if (width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob(
+                        (blob) => {
+                            const compressedFile = new File([blob], file.name, {
+                                type: file.type,
+                                lastModified: Date.now()
+                            });
+                            resolve(compressedFile);
+                        },
+                        file.type,
+                        quality
+                    );
+                };
+
+                img.onerror = reject;
+                img.src = URL.createObjectURL(file);
+            });
+        }
+
+        function resetForm() {
+            document.getElementById('cooperativeForm').reset();
+        }
+
+        async function refreshData() {
+            await displayCooperatives();
+            await refreshStats();
+        }
+
+        async function displayCooperatives() {
+            try {
+                const cooperatives = await cooperativeStorage.getAllCooperatives();
+                const container = document.getElementById('cooperativesList');
+                
+                if (cooperatives.length === 0) {
+                    container.innerHTML = '<p>Aucune coopérative stockée</p>';
+                    return;
+                }
+
+                container.innerHTML = cooperatives.map(cooperative => `
+                    <div class="cooperative-card">
+                        ${cooperative.logoPreview ? 
+                            `<img src="${cooperative.logoPreview}" alt="Logo" class="cooperative-logo">` :
+                            `<div class="cooperative-logo" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">Pas de logo</div>`
+                        }
+                        <div class="cooperative-info">
+                            <strong>Nom:</strong> ${cooperative.nom}<br>
+                            <strong>Marque:</strong> ${cooperative.marque}<br>
+                            <strong>Modèle:</strong> ${cooperative.modele}<br>
+                            <strong>Créée:</strong> ${new Date(cooperative.timestamp).toLocaleDateString('fr-FR')}
+                        </div>
+                        <div class="cooperative-actions">
+                            <button class="btn btn-danger" onclick="deleteCooperative('${cooperative.id}')">Supprimer</button>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Erreur lors de l\'affichage des coopératives:', error);
+            }
+        }
+
+        async function deleteCooperative(id) {
+            if (confirm('Voulez-vous vraiment supprimer cette coopérative ?')) {
+                try {
+                    await cooperativeStorage.deleteCooperative(id);
+                    await refreshData();
+                    showMessage('Coopérative supprimée avec succès', 'success');
+                } catch (error) {
+                    console.error('Erreur lors de la suppression:', error);
+                    showMessage('Erreur lors de la suppression', 'error');
+                }
+            }
+        }
+
+        async function refreshStats() {
+            try {
+                const info = await cooperativeStorage.getStorageInfo();
+                document.getElementById('totalCooperatives').textContent = info.totalCooperatives;
+                document.getElementById('totalImages').textContent = info.totalImages;
+                document.getElementById('totalSize').textContent = info.totalImageSizeMB;
+            } catch (error) {
+                console.error('Erreur lors du chargement des stats:', error);
+            }
+        }
+
+        async function exportData() {
+            try {
+                const data = await cooperativeStorage.exportAllData();
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `cooperatives_export_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showMessage('Données exportées avec succès !', 'success');
+            } catch (error) {
+                console.error('Erreur lors de l\'export:', error);
+                showMessage('Erreur lors de l\'export', 'error');
+            }
+        }
+
+        async function clearAllData() {
+            if (confirm('Voulez-vous vraiment supprimer TOUTES les coopératives ? Cette action est irréversible !')) {
+                try {
+                    const cooperatives = await cooperativeStorage.getAllCooperatives();
+                    for (const cooperative of cooperatives) {
+                        await cooperativeStorage.deleteCooperative(cooperative.id);
+                    }
+                    await refreshData();
+                    showMessage('Toutes les données ont été supprimées', 'success');
+                } catch (error) {
+                    console.error('Erreur lors de la suppression:', error);
+                    showMessage('Erreur lors de la suppression', 'error');
+                }
+            }
+        }
+
+        function showMessage(message, type) {
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = message;
+            div.style.position = 'fixed';
+            div.style.top = '20px';
+            div.style.right = '20px';
+            div.style.zIndex = '1000';
+            div.style.minWidth = '300px';
+            
+            document.body.appendChild(div);
+            
+            setTimeout(() => {
+                div.remove();
+            }, 5000);
+        }
+
+        // Initialisation
+        window.addEventListener('load', async () => {
+            try {
+                await refreshData();
+            } catch (error) {
+                console.error('Erreur lors de l\'initialisation:', error);
+            }
+        });
+    </script>
+</body>
+</html>

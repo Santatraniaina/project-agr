@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Simulateur National</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin: 10px 0;
+        }
+        label {
+            display: inline-block;
+            width: 200px;
+            font-weight: bold;
+        }
+        input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 150px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧮 Test du Simulateur National</h1>
+    
+    <div class="test-section">
+        <h2>Test des Calculs</h2>
+        <p>Ce test vérifie que les calculs du simulateur national fonctionnent correctement.</p>
+        
+        <div class="input-group">
+            <label>Prix TNR (Ar):</label>
+            <input type="number" id="prix_tnr" value="50000" min="0">
+        </div>
+        
+        <div class="input-group">
+            <label>Prix Antsirabe (Ar):</label>
+            <input type="number" id="prix_abe" value="40000" min="0">
+        </div>
+        
+        <div class="input-group">
+            <label>Réduction (%):</label>
+            <input type="number" id="pourcentage_reduction" value="10" min="0" max="100" step="0.1">
+        </div>
+        
+        <div class="input-group">
+            <label>Frais Fixe (Ar):</label>
+            <input type="number" id="frais_fixe" value="5000" min="0">
+        </div>
+        
+        <div class="input-group">
+            <label>Passagers TNR:</label>
+            <input type="number" id="passagers_tnr" value="5" min="0">
+        </div>
+        
+        <div class="input-group">
+            <label>Passagers Antsirabe:</label>
+            <input type="number" id="passagers_abe" value="3" min="0">
+        </div>
+        
+        <div class="input-group">
+            <label>Payé Autre TNR:</label>
+            <input type="number" id="paye_autre_tnr" value="2" min="0">
+        </div>
+        
+        <div class="input-group">
+            <label>Payé Autre ABE:</label>
+            <input type="number" id="paye_autre_abe" value="1" min="0">
+        </div>
+        
+        <button onclick="calculer()">Calculer</button>
+        <button onclick="reset()">Réinitialiser</button>
+    </div>
+    
+    <div id="resultats" class="test-section" style="display: none;">
+        <h2>Résultats du Calcul</h2>
+        <div id="calculs"></div>
+        
+        <h3>Détail par Voiture</h3>
+        <table id="tableau_resultats">
+            <thead>
+                <tr>
+                    <th>Voiture</th>
+                    <th>Pass. TNR</th>
+                    <th>Pass. ABE</th>
+                    <th>Montant Brut</th>
+                    <th>Montant Net</th>
+                    <th>Payé Autre TNR</th>
+                    <th>Payé Autre ABE</th>
+                    <th>À Payer</th>
+                </tr>
+            </thead>
+            <tbody id="tbody_resultats">
+            </tbody>
+        </table>
+        
+        <h3>Totaux</h3>
+        <div id="totaux"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Formules Utilisées</h2>
+        <div class="result">
+            <strong>Montant Brut = (Passagers TNR × Prix TNR) + (Passagers ABE × Prix ABE)</strong><br>
+            <strong>Montant Net = (Montant Brut × (1 - Pourcentage Réduction)) + Frais Fixe</strong><br>
+            <strong>Montant Final = Montant Net - (Payé Autre TNR × Prix TNR) - (Payé Autre ABE × Prix ABE)</strong>
+        </div>
+    </div>
+
+    <script>
+        function calculer() {
+            // Récupération des valeurs
+            const prix_tnr = parseFloat(document.getElementById('prix_tnr').value) || 0;
+            const prix_abe = parseFloat(document.getElementById('prix_abe').value) || 0;
+            const pourcentage_reduction = parseFloat(document.getElementById('pourcentage_reduction').value) || 0;
+            const frais_fixe = parseFloat(document.getElementById('frais_fixe').value) || 0;
+            const passagers_tnr = parseInt(document.getElementById('passagers_tnr').value) || 0;
+            const passagers_abe = parseInt(document.getElementById('passagers_abe').value) || 0;
+            const paye_autre_tnr = parseInt(document.getElementById('paye_autre_tnr').value) || 0;
+            const paye_autre_abe = parseInt(document.getElementById('paye_autre_abe').value) || 0;
+            
+            // Validation
+            if (pourcentage_reduction > 100) {
+                alert('Le pourcentage de réduction ne peut pas dépasser 100%');
+                return;
+            }
+            
+            // Calculs
+            const montant_brut = (passagers_tnr * prix_tnr) + (passagers_abe * prix_abe);
+            const pourcentage_decimal = pourcentage_reduction / 100;
+            const montant_apres_reduction = (montant_brut * (1 - pourcentage_decimal)) + frais_fixe;
+            const valeur_paye_autre_tnr = paye_autre_tnr * prix_tnr;
+            const valeur_paye_autre_abe = paye_autre_abe * prix_abe;
+            const montant_a_payer = montant_apres_reduction - valeur_paye_autre_tnr - valeur_paye_autre_abe;
+            
+            // Affichage des calculs détaillés
+            const calculsDiv = document.getElementById('calculs');
+            calculsDiv.innerHTML = `
+                <div class="result">
+                    <h4>Détail des Calculs :</h4>
+                    <p><strong>Montant Brut :</strong> (${passagers_tnr} × ${prix_tnr.toLocaleString()}) + (${passagers_abe} × ${prix_abe.toLocaleString()}) = ${montant_brut.toLocaleString()} Ar</p>
+                    <p><strong>Réduction :</strong> ${pourcentage_reduction}% = ${(pourcentage_decimal * 100).toFixed(1)}%</p>
+                    <p><strong>Montant après réduction :</strong> ${montant_brut.toLocaleString()} × (1 - ${pourcentage_decimal.toFixed(3)}) = ${(montant_brut * (1 - pourcentage_decimal)).toLocaleString()} Ar</p>
+                    <p><strong>Frais Fixe :</strong> +${frais_fixe.toLocaleString()} Ar</p>
+                    <p><strong>Montant Net :</strong> ${montant_apres_reduction.toLocaleString()} Ar</p>
+                    <p><strong>Payé Autre TNR :</strong> ${paye_autre_tnr} × ${prix_tnr.toLocaleString()} = ${valeur_paye_autre_tnr.toLocaleString()} Ar</p>
+                    <p><strong>Payé Autre ABE :</strong> ${paye_autre_abe} × ${prix_abe.toLocaleString()} = ${valeur_paye_autre_abe.toLocaleString()} Ar</p>
+                    <p><strong>Montant Final à Payer :</strong> ${montant_a_payer.toLocaleString()} Ar</p>
+                </div>
+            `;
+            
+            // Mise à jour du tableau
+            const tbody = document.getElementById('tbody_resultats');
+            tbody.innerHTML = `
+                <tr>
+                    <td>V1</td>
+                    <td>${passagers_tnr}</td>
+                    <td>${passagers_abe}</td>
+                    <td>${montant_brut.toLocaleString()}</td>
+                    <td>${montant_apres_reduction.toLocaleString()}</td>
+                    <td>${paye_autre_tnr}</td>
+                    <td>${paye_autre_abe}</td>
+                    <td style="background-color: #d4edda; font-weight: bold;">${montant_a_payer.toLocaleString()}</td>
+                </tr>
+            `;
+            
+            // Affichage des totaux
+            const totauxDiv = document.getElementById('totaux');
+            totauxDiv.innerHTML = `
+                <div class="result">
+                    <p><strong>Nombre de voitures :</strong> 1</p>
+                    <p><strong>Total Passagers TNR :</strong> ${passagers_tnr}</p>
+                    <p><strong>Total Passagers Antsirabe :</strong> ${passagers_abe}</p>
+                    <p><strong>Montant Brut Total :</strong> ${montant_brut.toLocaleString()} Ar</p>
+                    <p><strong>Montant Net Total :</strong> ${montant_apres_reduction.toLocaleString()} Ar</p>
+                    <p><strong>Montant Final à Payer :</strong> <span style="color: #155724; font-weight: bold;">${montant_a_payer.toLocaleString()} Ar</span></p>
+                </div>
+            `;
+            
+            // Affichage des résultats
+            document.getElementById('resultats').style.display = 'block';
+        }
+        
+        function reset() {
+            document.getElementById('prix_tnr').value = '50000';
+            document.getElementById('prix_abe').value = '40000';
+            document.getElementById('pourcentage_reduction').value = '10';
+            document.getElementById('frais_fixe').value = '5000';
+            document.getElementById('passagers_tnr').value = '5';
+            document.getElementById('passagers_abe').value = '3';
+            document.getElementById('paye_autre_tnr').value = '2';
+            document.getElementById('paye_autre_abe').value = '1';
+            document.getElementById('resultats').style.display = 'none';
+        }
+        
+        // Test automatique au chargement
+        window.onload = function() {
+            console.log('Test du simulateur national chargé');
+            console.log('Utilisez le bouton "Calculer" pour tester les calculs');
+        };
+    </script>
+</body>
+</html>

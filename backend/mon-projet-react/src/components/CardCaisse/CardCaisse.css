@@ -1,0 +1,328 @@
+/* Styles pour le composant CardCaisse unifié */
+
+/* Container principal */
+.card-caisse-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f9fafb;
+}
+
+/* Sidebar unifié */
+.sidebar-unified {
+    width: 320px;
+    background-color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid #e5e7eb;
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+/* En-tête du sidebar */
+.sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebar-header .icon-container {
+    padding: 0.75rem;
+    background-color: #ef4444;
+    border-radius: 0.5rem;
+}
+
+.sidebar-header .title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.sidebar-header .subtitle {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* Sélecteur de période */
+.period-selector {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.period-selector label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.period-selector select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.period-selector select:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: #ef4444;
+    border-color: #ef4444;
+}
+
+/* Menu de navigation */
+.sidebar-nav {
+    padding: 1rem;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    space-y: 0.5rem;
+}
+
+.sidebar-nav li {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-nav button {
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.sidebar-nav button:hover {
+    background-color: #f3f4f6;
+}
+
+.sidebar-nav button.active {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border-left: 4px solid #dc2626;
+}
+
+.sidebar-nav .icon {
+    margin-right: 0.75rem;
+    font-size: 1.125rem;
+}
+
+.sidebar-nav .menu-content {
+    flex: 1;
+}
+
+.sidebar-nav .menu-label {
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.sidebar-nav .menu-description {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.125rem;
+}
+
+/* Section statistiques */
+.stats-section {
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+    margin-top: auto;
+}
+
+.stats-container {
+    background: linear-gradient(to right, #fef2f2, #fee2e2);
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.stats-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #991b1b;
+    margin-bottom: 0.5rem;
+}
+
+.stats-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.stats-item:last-child {
+    margin-bottom: 0;
+}
+
+.stats-label {
+    color: #dc2626;
+}
+
+.stats-value {
+    font-weight: 600;
+    color: #991b1b;
+}
+
+/* Section raccourcis */
+.shortcuts-section {
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.shortcuts-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+}
+
+.shortcut-button {
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    background: none;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.shortcut-button:hover {
+    background-color: #f9fafb;
+}
+
+.shortcut-button .icon {
+    margin-right: 0.5rem;
+}
+
+/* Contenu principal */
+.main-content {
+    flex: 1;
+    padding: 1.5rem 2rem;
+    overflow-y: auto;
+}
+
+/* Layout responsive pour le contenu national */
+.national-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .national-layout {
+        flex-direction: row;
+    }
+    
+    .national-layout .simulator-section {
+        width: 66.666667%;
+    }
+    
+    .national-layout .summary-section {
+        width: 33.333333%;
+    }
+}
+
+/* Composant Expense Summary */
+.expense-summary {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.expense-summary h3 {
+    color: #333;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.expense-summary ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.expense-summary li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.875rem;
+}
+
+.expense-summary li:last-child {
+    border-bottom: none;
+}
+
+.expense-summary .total-expenses {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #e74c3c;
+    margin: 0.625rem 0;
+    padding: 0.625rem;
+    background-color: #fdf2f2;
+    border-radius: 0.25rem;
+    text-align: center;
+}
+
+.expense-summary .see-all-link {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.expense-summary .see-all-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .sidebar-unified {
+        width: 280px;
+    }
+}
+
+@media (max-width: 768px) {
+    .card-caisse-container {
+        flex-direction: column;
+    }
+    
+    .sidebar-unified {
+        width: 100%;
+        min-height: auto;
+        order: 2;
+    }
+    
+    .main-content {
+        order: 1;
+        padding: 1rem;
+    }
+    
+    .national-layout {
+        flex-direction: column;
+    }
+    
+    .national-layout .simulator-section,
+    .national-layout .summary-section {
+        width: 100%;
+    }
+}
