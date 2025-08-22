@@ -92,7 +92,7 @@ const Connexion = ({ onLogin }) => {
   };
 
   return (
-    <div className="bg-gray-100 p-4 pt-20" style={{ minHeight: '100vh' }}>
+    <div className="bg-gray-100 flex align-items-center justify-center h-full p-4">
       <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-6xl w-full mx-auto">
         {/* Partie gauche - Logo et texte descriptif */}
         <div className="text-center md:text-left md:w-1/2 lg:w-2/5">

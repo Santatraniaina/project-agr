@@ -32,8 +32,9 @@ const DashboardCards = () => {
   }, []);
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="h-full overflow-hidden">
       {/* Background animé */}
+      {/*
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-slow-zoom"
         style={{
@@ -41,23 +42,23 @@ const DashboardCards = () => {
         }}
       />
 
-      {/* Container pour les particules */}
       <div className="particles-container absolute inset-0 pointer-events-none" />
 
-      {/* Overlay avec animation de gradient */}
       <div
         className="absolute inset-0 animate-gradient"
         style={{
-          background: `linear-gradient(120deg, 
-            rgba(255, 255, 255, 0.8) 0%, 
-            rgba(255, 255, 255, 0.7) 50%, 
+          background: `linear-gradient(120deg,
+            rgba(255, 255, 255, 0.8) 0%,
+            rgba(255, 255, 255, 0.7) 50%,
             rgba(255, 255, 255, 0.8) 100%
           )` // Corrigé le '%' manquant
         }}
       />
+      */}
+
 
       {/* Contenu */}
-      <div className="relative z-10 py-8 px-4">
+      <div className="h-full z-10 py-8 px-4">
         <div className="max-w-3xl mx-auto text-center mb-10 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg">
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4 font-sans">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-emerald-500">
